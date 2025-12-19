@@ -1,0 +1,44 @@
+{
+  "name": "system-structure-viewer",
+  "version": "1.0.0",
+  "description": "Interactive system structure diagram viewer with file preview",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64",
+    "pack": "electron-builder --dir"
+  },
+  "keywords": [
+    "diagram",
+    "viewer",
+    "system-structure"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "dependencies": {
+    "xlsx": "^0.18.5",
+    "marked": "^11.1.1",
+    "prismjs": "^1.29.0"
+  },
+  "build": {
+    "appId": "com.systemstructureviewer.app",
+    "productName": "System Structure Viewer",
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "node_modules/**/*"
+    ]
+  }
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Structure Viewer</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+</head>
+
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>📊 Structure Viewer</h1>
+      </div>
+
+      <div class="project-section">
+        <h2>プロジェクト</h2>
+        <div class="project-actions">
+          <button id="newProjectBtn" class="btn btn-primary">
+            <span class="icon">➕</span> 新規プロジェクト
+          </button>
+          <button id="openProjectBtn" class="btn btn-secondary">
+            <span class="icon">📂</span> 開く
+          </button>
+          <button id="saveProjectBtn" class="btn btn-accent" disabled>
+            <span class="icon">💾</span> 保存
+          </button>
+        </div>
+
+        <div class="current-project">
+          <h3>現在のプロジェクト</h3>
+          <div id="currentProjectName" class="project-name">未選択</div>
+        </div>
+
+        <div class="recent-projects">
+          <h3>最近のプロジェクト</h3>
+          <div id="recentProjectsList" class="project-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+
+      <div class="mode-section">
+        <h2>モード</h2>
+        <div class="mode-toggle">
+          <button id="editModeBtn" class="mode-btn active">
+            <span class="icon">✏️</span> 編集
+          </button>
+          <button id="viewModeBtn" class="mode-btn">
+            <span class="icon">👁️</span> 閲覧
+          </button>
+        </div>
+      </div>
+
+      <div class="info-section">
+        <div id="statusInfo" class="status-info">
+          準備完了
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="toolbar">
+        <button id="uploadImageBtn" class="btn btn-primary">
+          <span class="icon">🖼️</span> 構造図をアップロード
+        </button>
+        <button id="clearAreasBtn" class="btn btn-danger" style="display: none;">
+          <span class="icon">🗑️</span> 全エリアクリア
+        </button>
+        <div class="toolbar-info">
+          <span id="areaCount">エリア数: 0</span>
+        </div>
+      </div>
+
+      <div class="canvas-container" id="canvasContainer">
+        <canvas id="mainCanvas"></canvas>
+        <div id="selectionBox" class="selection-box"></div>
+        <div id="editHandles" class="edit-handles"></div>
+      </div>
+
+      <div class="instructions" id="instructions">
+        <h2>使い方</h2>
+        <ol>
+          <li>「構造図をアップロード」ボタンでシステム構造図の画像を読み込みます</li>
+          <li>編集モードで画像上をドラッグしてエリアを作成します</li>
+          <li>作成したエリアをクリックしてファイルやURLを紐付けます</li>
+          <li>閲覧モードでエリアにホバーするとプレビューが表示されます</li>
+          <li>プロジェクトを保存して後から読み込むことができます</li>
+        </ol>
+      </div>
+    </main>
+  </div>
+
+  <!-- File Association Modal -->
+  <div id="fileAssociationModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>ファイル・リンクを設定</h2>
+        <button class="close-btn" id="closeModalBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="areaLabel">ラベル</label>
+          <input type="text" id="areaLabel" placeholder="例: Main.py" class="input-field">
+        </div>
+
+        <div class="form-group">
+          <label>種類</label>
+          <div class="type-selector">
+            <button class="type-btn active" data-type="file">📄 ファイル</button>
+            <button class="type-btn" data-type="url">🌐 URL</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="fileInputGroup">
+          <label for="filePath">ファイルパス</label>
+          <div class="file-path-input">
+            <input type="text" id="filePath" placeholder="ファイルを選択..." class="input-field" readonly>
+            <button id="browseFileBtn" class="btn btn-secondary">参照</button>
+          </div>
+        </div>
+
+        <div class="form-group" id="urlInputGroup" style="display: none;">
+          <label for="urlPath">URL</label>
+          <input type="text" id="urlPath" placeholder="https://example.com" class="input-field">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="deleteAreaBtn" class="btn btn-danger">削除</button>
+        <button id="saveAssociationBtn" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Name Modal -->
+  <div id="projectNameModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>新規プロジェクト</h2>
+        <button class="close-btn" id="closeProjectModalBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="projectNameInput">プロジェクト名</label>
+          <input type="text" id="projectNameInput" placeholder="例: AntiGravityシステム" class="input-field" autofocus>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="cancelProjectBtn" class="btn btn-secondary">キャンセル</button>
+        <button id="createProjectBtn" class="btn btn-primary">作成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project List Modal -->
+  <div id="projectListModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>プロジェクトを開く</h2>
+        <button class="close-btn" id="closeProjectListBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="projectListContainer" class="project-list-container">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview Popup -->
+  <div id="previewPopup" class="preview-popup">
+    <div class="preview-header">
+      <span id="previewTitle">Loading...</span>
+    </div>
+    <div id="previewContent" class="preview-content">
+      <!-- Dynamically populated -->
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script src="js/app.js"></script>
+  <script src="js/canvas.js"></script>
+  <script src="js/file-handler.js"></script>
+  <script src="js/preview.js"></script>
