@@ -155,15 +155,44 @@ const PreviewManager = {
         }
     },
 
-    async loadTextPreview(filePath, isMarkdown = false) {
-        const result = await window.electronAPI.readFile(filePath);
+    async decodeText(filePath) {
+        const result = await window.electronAPI.readFileBinary(filePath);
+        if (!result.success) throw new Error(result.error);
 
-        if (!result.success) {
-            throw new Error(result.error);
+        // Convert base64 to Uint8Array
+        const binary = atob(result.content);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
         }
 
-        const lines = result.content.split('\n').slice(0, 15);
-        const preview = lines.join('\n');
+        // Try UTF-8 first
+        try {
+            const decoder = new TextDecoder('utf-8', { fatal: true });
+            return decoder.decode(bytes);
+        } catch (e) {
+            // Fallback to Shift-JIS
+            try {
+                const decoder = new TextDecoder('shift-jis');
+                return decoder.decode(bytes);
+            } catch (e2) {
+                console.warn('Encoding fallback failed, using utf-8 ignore');
+                const decoder = new TextDecoder('utf-8', { fatal: false });
+                return decoder.decode(bytes);
+            }
+        }
+    },
+
+    async loadTextPreview(filePath, isMarkdown = false) {
+        const content = await this.decodeText(filePath);
+
+        let preview = content;
+        if (window.AppState.previewMode !== 'full') {
+            const lines = content.split('\n');
+            if (lines.length > 20) {
+                preview = lines.slice(0, 20).join('\n') + '\n\n... (省略されました)';
+            }
+        }
 
         if (isMarkdown && typeof marked !== 'undefined') {
             this.contentEl.innerHTML = marked.parse(preview);
@@ -173,14 +202,15 @@ const PreviewManager = {
     },
 
     async loadCodePreview(filePath, ext) {
-        const result = await window.electronAPI.readFile(filePath);
+        const content = await this.decodeText(filePath);
 
-        if (!result.success) {
-            throw new Error(result.error);
+        let preview = content;
+        if (window.AppState.previewMode !== 'full') {
+            const lines = content.split('\n');
+            if (lines.length > 20) {
+                preview = lines.slice(0, 20).join('\n') + '\n\n... (省略されました)';
+            }
         }
-
-        const lines = result.content.split('\n').slice(0, 15);
-        const preview = lines.join('\n');
 
         const langMap = {
             '.py': 'python',

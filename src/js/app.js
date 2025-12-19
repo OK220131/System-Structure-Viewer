@@ -6,7 +6,11 @@ const AppState = {
     areas: [],
     mode: 'edit', // 'edit' or 'view'
     savesPath: null,
-    selectedArea: null
+    selectedArea: null,
+    // New Options
+    clickAction: 'file', // 'file' or 'folder'
+    previewMode: 'partial', // 'partial' or 'full'
+    backgroundColor: '#ffffff' // 'transparent', '#fff', etc.
 };
 
 // Global Alert Function
@@ -83,6 +87,28 @@ function initializeUI() {
     // Project list modal
     document.getElementById('closeProjectListBtn').addEventListener('click', () => {
         document.getElementById('projectListModal').classList.remove('active');
+    });
+
+    // View Options
+    const clickFileBtn = document.getElementById('clickActionFile');
+    if (clickFileBtn) {
+        clickFileBtn.addEventListener('click', () => setClickAction('file'));
+        document.getElementById('clickActionFolder').addEventListener('click', () => setClickAction('folder'));
+    }
+
+    const previewPartialBtn = document.getElementById('previewPartial');
+    if (previewPartialBtn) {
+        previewPartialBtn.addEventListener('click', () => setPreviewMode('partial'));
+        document.getElementById('previewFull').addEventListener('click', () => setPreviewMode('full'));
+    }
+
+    // Background Color
+    document.querySelectorAll('.bg-color-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Check if clicked element is button or child
+            const target = e.target.closest('.bg-color-btn');
+            if (target) setBackgroundColor(target.dataset.color);
+        });
     });
 }
 
@@ -323,6 +349,12 @@ function setMode(mode) {
     if (window.CanvasManager) {
         window.CanvasManager.setMode(mode);
     }
+
+    // Toggle View Options visibility
+    const viewOptions = document.getElementById('viewOptionsSection');
+    if (viewOptions) {
+        viewOptions.style.display = mode === 'view' ? 'block' : 'none';
+    }
 }
 
 // Clear all areas
@@ -393,6 +425,34 @@ function updateStatus(message) {
     const statusEl = document.getElementById('statusInfo');
     if (statusEl) {
         statusEl.textContent = message;
+    }
+}
+
+// Helper: Set Click Action
+function setClickAction(action) {
+    AppState.clickAction = action;
+    document.getElementById('clickActionFile').classList.toggle('active', action === 'file');
+    document.getElementById('clickActionFolder').classList.toggle('active', action === 'folder');
+}
+
+// Helper: Set Preview Mode
+function setPreviewMode(mode) {
+    AppState.previewMode = mode;
+    document.getElementById('previewPartial').classList.toggle('active', mode === 'partial');
+    document.getElementById('previewFull').classList.toggle('active', mode === 'full');
+}
+
+// Helper: Set Background Color
+function setBackgroundColor(color) {
+    AppState.backgroundColor = color;
+    document.querySelectorAll('.bg-color-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.color === color);
+        // Special border handling for black on dark theme if needed, but CSS handles active state usually
+        btn.style.borderColor = btn.dataset.color === color ? '#007bff' : '#666';
+    });
+
+    if (window.CanvasManager) {
+        window.CanvasManager.redrawAreas();
     }
 }
 

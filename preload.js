@@ -18,7 +18,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
     // App operations
     getAppPath: () => ipcRenderer.invoke('get-app-path'),
+    getAppPath: () => ipcRenderer.invoke('get-app-path'),
     openExternal: (filePath) => ipcRenderer.invoke('open-external', filePath),
+    showItemInFolder: (filePath) => ipcRenderer.invoke('show-item-in-folder', filePath),
 
     // Path utilities
     path: {

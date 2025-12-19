@@ -53,6 +53,12 @@ const CanvasManager = {
         if (!this.image) return;
 
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Fill Background Color (if not transparent)
+        if (window.AppState.backgroundColor && window.AppState.backgroundColor !== 'transparent') {
+            this.ctx.fillStyle = window.AppState.backgroundColor;
+            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        }
         this.ctx.drawImage(this.image, 0, 0);
 
         // Draw areas
@@ -148,10 +154,8 @@ const CanvasManager = {
                 } else if (window.PreviewManager) {
                     window.PreviewManager.hide();
                 }
-            }
-
-            // Update preview position
-            if (hoveredArea && window.PreviewManager) {
+            } else if (this.hoveredArea && window.PreviewManager) {
+                // Update preview position while moving within the same area
                 window.PreviewManager.updatePosition(e.clientX, e.clientY);
             }
         }
@@ -242,12 +246,20 @@ const CanvasManager = {
     },
 
     async openAreaTarget(area) {
-        if (area.type === 'url') {
-            // Open URL in default browser
-            await window.electronAPI.openExternal(area.path);
-        } else if (area.type === 'file') {
-            // Open file in default application
-            await window.electronAPI.openExternal(area.path);
+        if (!area || !area.path) return;
+
+        try {
+            // Respect click action preference
+            if (window.AppState.clickAction === 'folder' && area.type === 'file') {
+                await window.electronAPI.showItemInFolder(area.path);
+            } else if (area.type === 'url') {
+                await window.electronAPI.openExternal(area.path);
+            } else {
+                await window.electronAPI.openExternal(area.path);
+            }
+        } catch (error) {
+            console.error('Error opening link:', error);
+            window.showAlert('リンクを開く際にエラーが発生しました: ' + error.message);
         }
     },
 

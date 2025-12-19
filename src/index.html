@@ -56,6 +56,33 @@
         </div>
       </div>
 
+      <div class="view-options-section" id="viewOptionsSection"
+        style="display: none; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;">
+        <h2 style="font-size: 14px; color: var(--text-secondary); margin-bottom: 10px;">閲覧オプション</h2>
+
+        <div class="option-group" style="margin-bottom: 15px;">
+          <label
+            style="display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px;">クリック時の動作</label>
+          <div class="toggle-group" style="display: flex; gap: 5px;">
+            <button id="clickActionFile" class="btn btn-secondary active"
+              style="flex: 1; font-size: 11px; padding: 4px;">📄 開く</button>
+            <button id="clickActionFolder" class="btn btn-secondary" style="flex: 1; font-size: 11px; padding: 4px;">📂
+              場所</button>
+          </div>
+        </div>
+
+        <div class="option-group">
+          <label
+            style="display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 5px;">プレビュー量</label>
+          <div class="toggle-group" style="display: flex; gap: 5px;">
+            <button id="previewPartial" class="btn btn-secondary active"
+              style="flex: 1; font-size: 11px; padding: 4px;">📑 一部</button>
+            <button id="previewFull" class="btn btn-secondary" style="flex: 1; font-size: 11px; padding: 4px;">📜
+              全文</button>
+          </div>
+        </div>
+      </div>
+
       <div class="info-section">
         <div id="statusInfo" class="status-info">
           準備完了
@@ -72,6 +99,28 @@
         <button id="clearAreasBtn" class="btn btn-danger" style="display: none;">
           <span class="icon">🗑️</span> 全エリアクリア
         </button>
+        <div id="bgColorControls" class="bg-color-control"
+          style="margin-left: 10px; display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 12px; color: var(--text-secondary);">背景:</span>
+          <button class="bg-color-btn" data-color="transparent" title="透過"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 2px solid #666; cursor: pointer; background-image: linear-gradient(45deg, #888 25%, transparent 25%), linear-gradient(-45deg, #888 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #888 75%), linear-gradient(-45deg, transparent 75%, #888 75%); background-size: 8px 8px; background-position: 0 0, 0 4px, 4px -4px, -4px 0px; background-color: #333; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn active" data-color="#ffffff" title="白"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #ffffff; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#000000" title="黒"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #000000; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#00ff00" title="緑"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #00ff00; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#ff0000" title="赤"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #ff0000; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#0000ff" title="青"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #0000ff; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#ffff00" title="黄"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #ffff00; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#800080" title="紫"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #800080; transition: transform 0.2s;"></button>
+          <button class="bg-color-btn" data-color="#ffa500" title="橙"
+            style="width: 24px; height: 24px; border-radius: 4px; border: 1px solid #666; cursor: pointer; background-color: #ffa500; transition: transform 0.2s;"></button>
+        </div>
         <div class="toolbar-info">
           <span id="areaCount">エリア数: 0</span>
         </div>

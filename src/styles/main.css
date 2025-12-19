@@ -666,3 +666,47 @@ body {
 .icon {
   font-size: 16px;
 }
+
+/* Background Color Buttons */
+.bg-color-btn {
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.bg-color-btn:hover {
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+.bg-color-btn.active {
+  box-shadow: 0 0 0 2px var(--accent-primary);
+  border-color: var(--accent-primary) !important;
+  z-index: 10;
+}
+
+/* Toggle Buttons (View Options) */
+.toggle-group {
+  background: var(--bg-tertiary);
+  padding: 2px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.toggle-group .btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.toggle-group .btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.toggle-group .btn.active {
+  background: var(--accent-primary);
+  color: #fff;
+  box-shadow: var(--shadow-sm);
+}

@@ -182,6 +182,17 @@ ipcMain.handle('open-external', async (event, filePath) => {
   }
 });
 
+// Show item in folder
+ipcMain.handle('show-item-in-folder', async (event, filePath) => {
+  try {
+    const { shell } = require('electron');
+    shell.showItemInFolder(filePath);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
 // Get file stats
 ipcMain.handle('get-file-stats', async (event, filePath) => {
   try {
