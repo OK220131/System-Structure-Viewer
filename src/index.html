@@ -106,7 +106,12 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="areaLabel">ラベル</label>
-          <input type="text" id="areaLabel" placeholder="例: Main.py" class="input-field">
+          <input type="text" id="areaLabel" placeholder="_(:3」∠)_" class="input-field">
+          <div class="checkbox-container" style="margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+            <input type="checkbox" id="autoLabelCheck">
+            <label for="autoLabelCheck"
+              style="display:inline; color:var(--text-secondary); font-size:13px; margin:0; cursor:pointer;">選択したファイル名を名前にする</label>
+          </div>
         </div>
 
         <div class="form-group">
@@ -120,8 +125,11 @@
         <div class="form-group" id="fileInputGroup">
           <label for="filePath">ファイルパス</label>
           <div class="file-path-input">
-            <input type="text" id="filePath" placeholder="ファイルを選択..." class="input-field" readonly>
-            <button id="browseFileBtn" class="btn btn-secondary">参照</button>
+            <input type="text" id="filePath" placeholder="ファイルまたはフォルダを選択..." class="input-field" readonly>
+            <div style="display: flex; gap: 4px;">
+              <button id="browseFileBtn" class="btn btn-secondary" style="white-space: nowrap;">ファイル参照</button>
+              <button id="browseFolderBtn" class="btn btn-secondary" style="white-space: nowrap;">フォルダ参照</button>
+            </div>
           </div>
         </div>
 
@@ -147,7 +155,7 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="projectNameInput">プロジェクト名</label>
-          <input type="text" id="projectNameInput" placeholder="例: AntiGravityシステム" class="input-field" autofocus>
+          <input type="text" id="projectNameInput" placeholder="_(:3」∠)_" class="input-field" autofocus>
         </div>
       </div>
       <div class="modal-footer">
@@ -190,6 +198,19 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 
   <script src="js/app.js"></script>
+  <!-- Alert Modal -->
+  <div id="alertModal" class="modal" style="z-index: 20002;">
+    <div class="modal-content" style="max-width: 400px; text-align: center;">
+      <div class="modal-header" style="justify-content: center; border-bottom: none; padding-bottom: 0;">
+        <h2 id="alertTitle" style="color: var(--text-primary); margin: 0;">Notice</h2>
+      </div>
+      <div class="modal-body">
+        <p id="alertMessage" style="color: var(--text-secondary); margin-bottom: 20px; font-size: 15px;"></p>
+        <button id="alertOkBtn" class="btn btn-primary" style="min-width: 100px;">OK</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/canvas.js"></script>
   <script src="js/file-handler.js"></script>
   <script src="js/preview.js"></script>

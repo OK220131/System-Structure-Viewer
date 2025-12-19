@@ -112,6 +112,18 @@ const PreviewManager = {
 
     async loadFilePreview(filePath) {
         try {
+            // Check file type first
+            try {
+                const stats = await window.electronAPI.getFileStats(filePath);
+                if (stats && stats.isDirectory) {
+                    await this.loadDirectoryPreview(filePath);
+                    return;
+                }
+            } catch (statError) {
+                console.warn('Could not stat file:', filePath);
+                // Continue as file if stat fails (might be a permission issue or race condition)
+            }
+
             const ext = window.electronAPI.path.extname(filePath).toLowerCase();
 
             // Different preview based on file type

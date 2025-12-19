@@ -16,8 +16,9 @@ const FileHandler = {
             btn.addEventListener('click', (e) => this.switchType(e.target.dataset.type));
         });
 
-        // Browse file button
+        // Browse buttons
         document.getElementById('browseFileBtn').addEventListener('click', () => this.browseFile());
+        document.getElementById('browseFolderBtn').addEventListener('click', () => this.browseFolder());
 
         // Close modal on outside click
         this.modal.addEventListener('click', (e) => {
@@ -61,23 +62,47 @@ const FileHandler = {
     async browseFile() {
         try {
             const result = await window.electronAPI.openFileDialog({
-                properties: ['openFile'],
-                filters: [
-                    { name: 'All Files', extensions: ['*'] },
-                    { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'svg', 'webp', 'bmp'] },
-                    { name: 'Documents', extensions: ['txt', 'md', 'pdf', 'docx', 'pptx', 'xlsx', 'xlsm', 'csv'] },
-                    { name: 'Code', extensions: ['py', 'js', 'html', 'css', 'json', 'ipynb'] }
-                ]
+                title: 'リンクするファイルを選択',
+                properties: ['openFile']
             });
 
             if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
                 return;
             }
 
-            document.getElementById('filePath').value = result.filePaths[0];
+            const filePath = result.filePaths[0];
+            document.getElementById('filePath').value = filePath;
+            this.handleAutoLabel(filePath);
         } catch (error) {
             console.error('Error browsing file:', error);
-            alert('ファイル選択中にエラーが発生しました');
+            window.showAlert('ファイル選択中にエラーが発生しました');
+        }
+    },
+
+    async browseFolder() {
+        try {
+            const result = await window.electronAPI.openFileDialog({
+                properties: ['openDirectory']
+            });
+
+            if (result.canceled || !result.filePaths || result.filePaths.length === 0) {
+                return;
+            }
+
+            const folderPath = result.filePaths[0];
+            document.getElementById('filePath').value = folderPath;
+            this.handleAutoLabel(folderPath);
+        } catch (error) {
+            console.error('Error browsing folder:', error);
+            window.showAlert('フォルダ選択中にエラーが発生しました');
+        }
+    },
+
+    handleAutoLabel(path) {
+        if (document.getElementById('autoLabelCheck').checked) {
+            // Get basename using the exposed path module
+            const basename = window.electronAPI.path.basename(path);
+            document.getElementById('areaLabel').value = basename;
         }
     },
 
@@ -96,12 +121,12 @@ const FileHandler = {
         }
 
         if (!label) {
-            alert('ラベルを入力してください');
+            window.showAlert('ラベルを入力してください');
             return;
         }
 
         if (!path) {
-            alert(activeType === 'file' ? 'ファイルを選択してください' : 'URLを入力してください');
+            window.showAlert(activeType === 'file' ? 'ファイルを選択してください' : 'URLを入力してください');
             return;
         }
 

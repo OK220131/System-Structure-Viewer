@@ -9,6 +9,38 @@ const AppState = {
     selectedArea: null
 };
 
+// Global Alert Function
+window.showAlert = function (message, title = '通知') {
+    const modal = document.getElementById('alertModal');
+    const titleEl = document.getElementById('alertTitle');
+    const msgEl = document.getElementById('alertMessage');
+    const okBtn = document.getElementById('alertOkBtn');
+
+    if (!modal) {
+        console.error('Alert modal not found');
+        return;
+    }
+
+    titleEl.textContent = title; // Simple text set
+    msgEl.textContent = message;
+
+    // Remove old listeners involves cloning or managing state, simpler to simple add/remove
+    const newBtn = okBtn.cloneNode(true);
+    okBtn.parentNode.replaceChild(newBtn, okBtn);
+
+    newBtn.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    // Also allow Enter key
+    newBtn.onkeydown = (e) => {
+        if (e.key === 'Enter') modal.classList.remove('active');
+    };
+
+    modal.classList.add('active');
+    setTimeout(() => newBtn.focus(), 50);
+};
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', async () => {
     AppState.savesPath = await window.electronAPI.getAppPath();
@@ -73,7 +105,7 @@ function hideProjectNameModal() {
 async function createNewProjectFromModal() {
     const name = document.getElementById('projectNameInput').value.trim();
     if (!name) {
-        alert('プロジェクト名を入力してください');
+        showAlert('プロジェクト名を入力してください');
         return;
     }
 
@@ -100,12 +132,12 @@ async function openProject() {
         const result = await window.electronAPI.readDirectory(AppState.savesPath);
 
         if (!result.success) {
-            alert('プロジェクトフォルダの読み込みに失敗しました');
+            showAlert('プロジェクトフォルダの読み込みに失敗しました');
             return;
         }
 
         if (result.files.length === 0) {
-            alert('保存されたプロジェクトがありません');
+            showAlert('保存されたプロジェクトがありません');
             return;
         }
 
@@ -116,7 +148,7 @@ async function openProject() {
         await loadProjectByName(projectName);
     } catch (error) {
         console.error('Error opening project:', error);
-        alert('プロジェクトを開く際にエラーが発生しました');
+        showAlert('プロジェクトを開く際にエラーが発生しました');
     }
 }
 
@@ -168,7 +200,7 @@ async function loadProjectByName(projectName) {
         const result = await window.electronAPI.readFile(configPath);
 
         if (!result.success) {
-            alert('設定ファイルの読み込みに失敗しました');
+            showAlert('設定ファイルの読み込みに失敗しました');
             return;
         }
 
@@ -191,21 +223,27 @@ async function loadProjectByName(projectName) {
         if (window.CanvasManager) {
             window.CanvasManager.redrawAreas();
         }
+
+        // Hide instructions
+        const instructions = document.getElementById('instructions');
+        if (instructions) {
+            instructions.style.display = 'none';
+        }
     } catch (error) {
         console.error('Error loading project:', error);
-        alert('プロジェクトの読み込み中にエラーが発生しました');
+        showAlert('プロジェクトの読み込み中にエラーが発生しました');
     }
 }
 
 // Save project
 async function saveProject() {
     if (!AppState.projectName) {
-        alert('プロジェクト名が設定されていません');
+        showAlert('プロジェクト名が設定されていません');
         return;
     }
 
     if (!AppState.diagramImage) {
-        alert('構造図がアップロードされていません');
+        showAlert('構造図がアップロードされていません');
         return;
     }
 
@@ -226,11 +264,11 @@ async function saveProject() {
             updateStatus(`プロジェクト「${AppState.projectName}」を保存しました`);
             loadRecentProjects();
         } else {
-            alert('保存に失敗しました: ' + result.error);
+            showAlert('保存に失敗しました: ' + result.error);
         }
     } catch (error) {
         console.error('Error saving project:', error);
-        alert('保存中にエラーが発生しました');
+        showAlert('保存中にエラーが発生しました');
     }
 }
 
@@ -238,6 +276,7 @@ async function saveProject() {
 async function uploadImage() {
     try {
         const result = await window.electronAPI.openFileDialog({
+            title: '構造図画像を選択',
             properties: ['openFile'],
             filters: [
                 { name: 'Images', extensions: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'] }
@@ -265,7 +304,7 @@ async function uploadImage() {
         }
     } catch (error) {
         console.error('Error uploading image:', error);
-        alert('画像の読み込み中にエラーが発生しました');
+        showAlert('画像の読み込み中にエラーが発生しました');
     }
 }
 

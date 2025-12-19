@@ -26,7 +26,7 @@ const CanvasManager = {
             const result = await window.electronAPI.readFileBinary(imagePath);
 
             if (!result.success) {
-                alert('画像の読み込みに失敗しました');
+                window.showAlert('画像の読み込みに失敗しました');
                 return;
             }
 
@@ -45,7 +45,7 @@ const CanvasManager = {
             });
         } catch (error) {
             console.error('Error loading image:', error);
-            alert('画像の読み込み中にエラーが発生しました');
+            window.showAlert('画像の読み込み中にエラーが発生しました');
         }
     },
 

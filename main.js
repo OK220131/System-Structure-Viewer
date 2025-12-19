@@ -111,10 +111,19 @@ ipcMain.handle('write-file', async (event, filePath, content) => {
 });
 
 // Read directory
+// Read directory
 ipcMain.handle('read-directory', async (event, dirPath) => {
   try {
-    const files = await fs.readdir(dirPath);
-    return { success: true, files };
+    const dirents = await fs.readdir(dirPath, { withFileTypes: true });
+    // Keep 'files' for backward compatibility (just names)
+    const files = dirents.map(d => d.name);
+    // Add 'items' for detailed info
+    const items = dirents.map(d => ({
+      name: d.name,
+      isDirectory: d.isDirectory(),
+      isFile: d.isFile()
+    }));
+    return { success: true, files, items };
   } catch (error) {
     return { success: false, error: error.message };
   }
